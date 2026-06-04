@@ -475,6 +475,7 @@ own account.</p>
 <li>Register Dagster code-location images stored in a consumer-owned Snowflake
   image repository.</li>
 <li>Update a code location by publishing a new image and updating the service.</li>
+<li>Size run-worker CPU and memory globally or per Dagster run.</li>
 <li>Pass Snowflake external access integrations and secrets to individual
   Dagster runs with run tags.</li>
 </ul>
@@ -483,6 +484,10 @@ own account.</p>
 <code>core.dagster</code>. Code locations run as long-lived services in the app-created
 <code>CODE_LOCATIONS</code> schema. Each Dagster run starts a short-lived SPCS job service
 from the matching code-location image.</p>
+<p>Run workers default to <code>0.25</code> vCPU and <code>512Mi</code> memory, matching Dagster ECS'
+default Linux task resources of <code>256</code> CPU units and <code>512</code> MiB memory. You can
+change the launcher defaults in <code>dagster.yaml</code> with <code>run_resources</code>, or override
+an individual run with the <code>snowflake/cpu</code> and <code>snowflake/memory</code> run tags.</p>
 <p>The run launcher uses the Snowflake service OAuth token mounted inside SPCS. It
 does not require a Snowflake username/password secret for the control plane.</p>
 

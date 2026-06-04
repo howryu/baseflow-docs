@@ -365,6 +365,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cpu-and-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CPU and Memory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#external-access-integrations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -432,6 +443,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cpu-and-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CPU and Memory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#external-access-integrations" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -486,8 +508,25 @@
 
 <h1 id="snowflake-run-tags">Snowflake Run Tags</h1>
 <p>Snowdag supports Snowflake-specific Dagster run tags for SPCS run workers. Set
-these tags on the Dagster run when a job needs external access integrations or
-Snowflake secrets.</p>
+these tags on the Dagster run when a job needs custom worker resources, external
+access integrations, or Snowflake secrets.</p>
+<h2 id="cpu-and-memory">CPU and Memory</h2>
+<p>Use the <code>snowflake/cpu</code> and <code>snowflake/memory</code> tags to set SPCS container
+resources for a run-worker job service. Snowdag renders these values into both
+<code>containers.resources.requests</code> and <code>containers.resources.limits</code>.</p>
+<p>By default, run workers use <code>0.25</code> vCPU and <code>512Mi</code> memory. This matches
+Dagster ECS' default Linux run-task resources of <code>256</code> CPU units and <code>512</code> MiB
+memory. If you configure launcher-level <code>run_resources</code> in <code>dagster.yaml</code>, these
+tags override those defaults for the individual run.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;snowflake/cpu&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;snowflake/memory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2Gi&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>CPU values must be positive vCPU quantities such as <code>0.5</code>, <code>1</code>, or <code>500m</code>.
+Memory values must include a Snowflake-supported unit: <code>M</code>, <code>Mi</code>, <code>G</code>, or <code>Gi</code>,
+such as <code>512Mi</code> or <code>2G</code>.</p>
 <h2 id="external-access-integrations">External Access Integrations</h2>
 <p>Use the <code>snowflake/external_access_integrations</code> tag to attach one or more
 Snowflake external access integrations to the run-worker job service.</p>
@@ -537,6 +576,14 @@ selected secrets.</p>
 execution metadata, pass the tags as strings:</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;snowflake/cpu&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.5&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;snowflake/memory&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2Gi&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;snowflake/external_access_integrations&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OPENAI_EAI&quot;</span>
 <span class="w">  </span><span class="p">},</span>
@@ -547,8 +594,8 @@ execution metadata, pass the tags as strings:</p>
 <span class="p">]</span>
 </code></pre></div>
 <p>Snowdag validates the tag values before creating the run-worker job service.
-Invalid identifiers, invalid JSON, duplicate environment variable names, or
-missing required fields fail the run launch.</p>
+Invalid resource values, invalid identifiers, invalid JSON, duplicate
+environment variable names, or missing required fields fail the run launch.</p>
 
 
 
