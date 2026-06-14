@@ -530,8 +530,15 @@ If startup needs to be retried manually, call:</p>
 </code></pre></div>
 <p>Grant the Snowdag application role to users or roles that should open the
 Dagster UI:</p>
-<div class="highlight"><pre><span></span><code><span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_USER</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">consumer_role</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_VIEWER</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">viewer_role</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_LAUNCHER</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">launcher_role</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_EDITOR</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">editor_role</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_ADMIN</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">admin_role</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
+<p>Snowdag checks these app roles in the Dagster webserver proxy. After the first
+Snowflake-backed authorization check, the proxy sets a short-lived signed RBAC
+cookie so later UI GraphQL requests can avoid another Snowflake round trip even
+if Snowflake rotates the caller token. The default cookie TTL is 300 seconds.</p>
 <h2 id="prepare-a-code-image-repository">Prepare a Code Image Repository</h2>
 <p>Create a consumer-owned image repository and grant the installed application
 read access:</p>
