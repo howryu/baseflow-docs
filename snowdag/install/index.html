@@ -562,8 +562,8 @@ the Python module that contains your Dagster definitions.</p>
 <span class="p">);</span>
 </code></pre></div>
 <p>Snowdag creates an app-owned service named <code>CODE_LOCATIONS.FINANCE</code> in its
-code-location compute pool, then restarts the control-plane service so Dagster
-regenerates <code>workspace.yaml</code>.</p>
+code-location compute pool. The control-plane webserver and daemon discover
+running code-location services from Snowflake during workspace refresh.</p>
 <p>After the service is ready, open the Dagster UI from the Snowflake service
 endpoint for <code>core.dagster</code>.</p>
 

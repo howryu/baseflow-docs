@@ -506,9 +506,10 @@ code-location service.</p>
 <p>Updating an existing code-location image does not require reinstalling Snowdag.
 If Dagster does not show the latest code after the service update, reload the
 code location in the Dagster UI.</p>
-<p>Adding or removing a code location changes the generated workspace. Snowdag
-restarts <code>core.dagster</code> after <code>add_code_location</code> or <code>remove_code_location</code> so
-the webserver and daemon re-read the workspace.</p>
+<p>Adding or removing a code location changes the Snowflake service list. Snowdag
+webserver and daemon processes refresh their workspace from running services in
+the code-location schema, so <code>add_code_location</code> and <code>remove_code_location</code> do
+not restart <code>core.dagster</code>.</p>
 <p>You can manually restart the control plane when needed:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">restart_dagster</span><span class="p">();</span>
 </code></pre></div>
@@ -516,8 +517,8 @@ the webserver and daemon re-read the workspace.</p>
 <p>Remove code locations that should no longer appear in Dagster:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">remove_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">);</span>
 </code></pre></div>
-<p>Snowdag suspends and drops the code-location service, then restarts the control
-plane.</p>
+<p>Snowdag drops the code-location service. The webserver and daemon stop listing
+it after workspace refresh observes that the service is gone.</p>
 
 
 
