@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#snowdag" class="md-skip">
+        <a href="#overview" class="md-skip">
           Skip to content
         </a>
       
@@ -284,6 +284,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-you-can-do" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -295,10 +306,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#runtime-model" class="md-nav__link">
+  <a href="#where-to-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runtime Model
+        Where To Start
       
     </span>
   </a>
@@ -327,7 +338,61 @@
   <span class="md-ellipsis">
     
   
-    Install Snowdag
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="app-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App API and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RBAC
   
 
     
@@ -354,7 +419,7 @@
   <span class="md-ellipsis">
     
   
-    Update Code
+    Code Location
   
 
     
@@ -421,6 +486,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-you-can-do" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -432,10 +508,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#runtime-model" class="md-nav__link">
+  <a href="#where-to-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runtime Model
+        Where To Start
       
     </span>
   </a>
@@ -462,34 +538,30 @@
   
 
 
-<h1 id="snowdag">Snowdag</h1>
-<p>Snowdag installs a Dagster OSS control plane into a Snowflake consumer account
-using Snowpark Container Services. The Native App creates the Dagster
-webserver, daemon, PostgreSQL storage service, code-location services, and
-short-lived run-worker job services.</p>
-<p>These docs are for Snowflake consumers who install and operate Snowdag in their
-own account.</p>
+<h1 id="overview">Overview</h1>
+<p>Snowdag runs Dagster OSS entirely inside a consumer Snowflake account and security boundary using Snowpark Container Services. The Native App creates the Dagster control plane, code-location services, and autoscaling short-lived run-worker job services.</p>
+<p>Snowdag integrates Dagster with Snowflake authentication, RBAC, image repositories, external access integrations, and secrets.</p>
+<p>These docs are for:</p>
+<ul>
+<li><strong>Admins</strong> who install Snowdag, grant roles, register code locations, and operate the app.</li>
+<li><strong>Users</strong> who use the Dagster UI or APIs.</li>
+</ul>
+<h2 id="scope">Scope</h2>
+<p>This website documents how to install, configure, and operate Snowdag. It does not replace the official Dagster documentation for Dagster APIs, definitions, assets, jobs, schedules, sensors, or general Dagster concepts.</p>
+<p>For Dagster-specific usage, see the <a href="https://docs.dagster.io/">official Dagster documentation</a>.</p>
 <h2 id="what-you-can-do">What You Can Do</h2>
 <ul>
-<li>Install the Snowdag Native App and open the Dagster UI.</li>
-<li>Register Dagster code-location images stored in a consumer-owned Snowflake
-  image repository.</li>
-<li>Update a code location by publishing a new image and updating the service.</li>
-<li>Size run-worker CPU and memory globally or per Dagster run.</li>
-<li>Pass Snowflake external access integrations and secrets to individual
-  Dagster runs with run tags.</li>
+<li>Install or uninstall the Snowdag Native App.</li>
+<li>Register or unregister code locations.</li>
+<li>Control app access with application roles.</li>
+<li>Launch Dagster runs.</li>
+<li>Update code locations.</li>
 </ul>
-<h2 id="runtime-model">Runtime Model</h2>
-<p>Snowdag runs the Dagster control plane as an app-owned SPCS service named
-<code>core.dagster</code>. Code locations run as long-lived services in the app-created
-<code>CODE_LOCATIONS</code> schema. Each Dagster run starts a short-lived SPCS job service
-from the matching code-location image.</p>
-<p>Run workers default to <code>0.25</code> vCPU and <code>512Mi</code> memory, matching Dagster ECS'
-default Linux task resources of <code>256</code> CPU units and <code>512</code> MiB memory. You can
-change the launcher defaults in <code>dagster.yaml</code> with <code>run_resources</code>, or override
-an individual run with the <code>snowflake/cpu</code> and <code>snowflake/memory</code> run tags.</p>
-<p>The run launcher uses the Snowflake service OAuth token mounted inside SPCS. It
-does not require a Snowflake username/password secret for the control plane.</p>
+<h2 id="where-to-start">Where To Start</h2>
+<ul>
+<li>Admins: <a href="install/">Install Snowdag</a>, then <a href="app-api/">App API and Operations</a>.</li>
+<li>Users: <a href="rbac/">RBAC</a>, then <a href="snowflake-run-tags/">Snowflake Run Tags</a>.</li>
+</ul>
 
 
 

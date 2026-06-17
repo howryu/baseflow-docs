@@ -16,7 +16,7 @@
         <link rel="prev" href="..">
       
       
-        <link rel="next" href="../update-code/">
+        <link rel="next" href="../app-api/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Install Snowdag - Snowdag</title>
+        <title>Installation - Snowdag</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#install-snowdag" class="md-skip">
+        <a href="#installation" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Install Snowdag
+              Installation
             
           </span>
         </div>
@@ -269,7 +269,7 @@
   <span class="md-ellipsis">
     
   
-    Install Snowdag
+    Installation
   
 
     
@@ -287,7 +287,7 @@
   <span class="md-ellipsis">
     
   
-    Install Snowdag
+    Installation
   
 
     
@@ -356,10 +356,75 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#compute-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../app-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App API and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -378,7 +443,7 @@
   <span class="md-ellipsis">
     
   
-    Update Code
+    Code Location
   
 
     
@@ -488,6 +553,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#compute-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -508,40 +584,29 @@
   
 
 
-<h1 id="install-snowdag">Install Snowdag</h1>
+<h1 id="installation">Installation</h1>
 <h2 id="prerequisites">Prerequisites</h2>
-<p>You need a Snowflake role that can install the Snowdag Native App and grant the
-privileges it requests. The app needs account-level privileges to create compute
-pools and bind service endpoints.</p>
-<p>You also need a Snowflake image repository that contains your Dagster code
-server image. The same image is used for run workers, so it must include your
-project code and runtime dependencies.</p>
+<p>You need a Snowflake role that can install the Snowdag Native App and grant its requested privileges. The app needs account-level privileges to create compute pools and bind service endpoints.</p>
+<p>You also need a Snowflake image repository with your Dagster code-server image. Snowdag uses the same image for run workers, so it must include your project code and the dependencies needed by both the gRPC code server and <code>dagster api execute_run</code>.</p>
 <h2 id="install-the-app">Install the App</h2>
-<p>Install the Snowdag Native App from the package made available by the provider.
-After installation, grant the requested privileges to the application if they
-were not auto-granted:</p>
+<p>If you install from the Snowflake Marketplace UI, follow the UI prompts and skip this section. To run the same steps manually, continue below.</p>
+<p>After installation, grant requested privileges if they were not auto-granted:</p>
 <div class="highlight"><pre><span></span><code><span class="k">GRANT</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="n">COMPUTE</span><span class="w"> </span><span class="n">POOL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ACCOUNT</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">;</span>
 <span class="k">GRANT</span><span class="w"> </span><span class="n">BIND</span><span class="w"> </span><span class="n">SERVICE</span><span class="w"> </span><span class="n">ENDPOINT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ACCOUNT</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">;</span>
 </code></pre></div>
-<p>Snowflake invokes the app grant callback after required privileges are granted.
-If startup needs to be retried manually, call:</p>
+<p>Snowflake invokes the app grant callback after required privileges are granted. To retry startup manually:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">start_app</span><span class="p">();</span>
 <span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">service_status</span><span class="p">();</span>
 </code></pre></div>
-<p>Grant the Snowdag application role to users or roles that should open the
-Dagster UI:</p>
+<p>Grant Snowdag application roles to users or roles that need the Dagster UI:</p>
 <div class="highlight"><pre><span></span><code><span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_VIEWER</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">viewer_role</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_LAUNCHER</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">launcher_role</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_EDITOR</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">editor_role</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_ADMIN</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">admin_role</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
-<p>Snowdag checks these app roles in the Dagster webserver proxy. After the first
-Snowflake-backed authorization check, the proxy sets a short-lived signed RBAC
-cookie so later UI GraphQL requests can avoid another Snowflake round trip even
-if Snowflake rotates the caller token. The default cookie TTL is 300 seconds.</p>
+<p>Use the least powerful role that fits each user. See <a href="../rbac/">RBAC</a> for allowed actions.</p>
 <h2 id="prepare-a-code-image-repository">Prepare a Code Image Repository</h2>
-<p>Create a consumer-owned image repository and grant the installed application
-read access:</p>
+<p>Create an image repository for containers with your Dagster definition code, then grant Snowdag access:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">SNOWDAG_CONSUMER_DB</span><span class="p">;</span>
 <span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">SNOWDAG_CONSUMER_DB</span><span class="p">.</span><span class="n">CODE</span><span class="p">;</span>
 <span class="k">CREATE</span><span class="w"> </span><span class="n">IMAGE</span><span class="w"> </span><span class="n">REPOSITORY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">SNOWDAG_CONSUMER_DB</span><span class="p">.</span><span class="n">CODE</span><span class="p">.</span><span class="n">CONSUMER_REPO</span><span class="p">;</span>
@@ -551,21 +616,65 @@ read access:</p>
 <span class="k">GRANT</span><span class="w"> </span><span class="k">READ</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">IMAGE</span><span class="w"> </span><span class="n">REPOSITORY</span><span class="w"> </span><span class="n">SNOWDAG_CONSUMER_DB</span><span class="p">.</span><span class="n">CODE</span><span class="p">.</span><span class="n">CONSUMER_REPO</span>
 <span class="w">  </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">;</span>
 </code></pre></div>
-<p>Build and push your Dagster code image to that repository. The image must expose
-the Python module that contains your Dagster definitions.</p>
+<p>Build and push your Dagster code image to that repository. The image must expose the Python module with your Dagster definitions and include <code>dagster-postgres</code>, because run workers use Snowdag's PostgreSQL-backed Dagster storage.</p>
 <h2 id="add-a-code-location">Add a Code Location</h2>
-<p>Register the code-location service with Snowdag:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span>
+<p>Register the code-location service:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
 <span class="p">);</span>
 </code></pre></div>
-<p>Snowdag creates an app-owned service named <code>CODE_LOCATIONS.FINANCE</code> in its
-code-location compute pool. The control-plane webserver and daemon discover
-running code-location services from Snowflake during workspace refresh.</p>
-<p>After the service is ready, open the Dagster UI from the Snowflake service
-endpoint for <code>core.dagster</code>.</p>
+<p>Snowdag creates an app-owned code location named <code>FINANCE</code>.</p>
+<p>If the real image is not ready yet, an <code>APP_ADMIN</code> can register the location with the bundled hello-world image by passing an empty image string:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;&#39;</span>
+<span class="p">);</span>
+</code></pre></div>
+<p>Use the four-argument form when automation should wait for readiness:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="k">TRUE</span>
+<span class="p">);</span>
+</code></pre></div>
+<p>After the service is ready, open the Dagster UI from the Snowflake service endpoint for <code>core.dagster</code>.</p>
+<h2 id="compute-resources">Compute Resources</h2>
+<p>Snowdag creates three SPCS compute pools in the consumer account:</p>
+<table>
+<thead>
+<tr>
+<th>Compute pool</th>
+<th>Used for</th>
+<th>Instance family</th>
+<th>Nodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;app_name&gt;_CONTROL_POOL</code></td>
+<td>Dagster UI, daemon, and storage</td>
+<td><code>GEN_ARM_G1_8</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>&lt;app_name&gt;_CODE_LOCATION_POOL</code></td>
+<td>Registered code locations</td>
+<td><code>GEN_ARM_G1_4</code></td>
+<td>1-5</td>
+</tr>
+<tr>
+<td><code>&lt;app_name&gt;_RUN_POOL</code></td>
+<td>Pipeline run workers</td>
+<td><code>GEN_ARM_G1_8</code></td>
+<td>1-5</td>
+</tr>
+</tbody>
+</table>
+<p>Run workers default to <code>0.25</code> vCPU and <code>512Mi</code> memory per run. Users can request different resources with <code>snowflake/cpu</code> and <code>snowflake/memory</code> tags.</p>
 
 
 

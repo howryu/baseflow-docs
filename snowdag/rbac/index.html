@@ -10,11 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://docs.baseflow.biz/snowdag/snowflake-run-tags/">
+        <link rel="canonical" href="https://docs.baseflow.biz/snowdag/rbac/">
       
       
-        <link rel="prev" href="../update-code/">
+        <link rel="prev" href="../app-api/">
       
+      
+        <link rel="next" href="../update-code/">
       
       
         
@@ -25,7 +27,7 @@
     
     
       
-        <title>Snowflake Run Tags - Snowdag</title>
+        <title>RBAC - Snowdag</title>
       
     
     
@@ -66,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#snowflake-run-tags" class="md-skip">
+        <a href="#rbac" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Snowflake Run Tags
+              RBAC
             
           </span>
         </div>
@@ -302,10 +304,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../rbac/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RBAC
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -321,6 +350,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing Roles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operation-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operation Mapping
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -356,37 +438,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Snowflake Run Tags
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../snowflake-run-tags/" class="md-nav__link">
         
   
   
@@ -402,70 +457,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#cpu-and-memory" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CPU and Memory
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#external-access-integrations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        External Access Integrations
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#secrets" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Secrets
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example-dagster-launch-tags" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example Dagster Launch Tags
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -497,10 +488,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cpu-and-memory" class="md-nav__link">
+  <a href="#roles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CPU and Memory
+        Roles
       
     </span>
   </a>
@@ -508,10 +499,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#external-access-integrations" class="md-nav__link">
+  <a href="#choosing-roles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        External Access Integrations
+        Choosing Roles
       
     </span>
   </a>
@@ -519,21 +510,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#secrets" class="md-nav__link">
+  <a href="#operation-mapping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Secrets
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example-dagster-launch-tags" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example Dagster Launch Tags
+        Operation Mapping
       
     </span>
   </a>
@@ -560,75 +540,209 @@
   
 
 
-<h1 id="snowflake-run-tags">Snowflake Run Tags</h1>
-<p>This page is for users who launch runs and admins who grant Snowflake access. Set these Dagster run tags only when a run needs custom worker resources, external access integrations, or Snowflake secrets.</p>
-<h2 id="cpu-and-memory">CPU and Memory</h2>
-<p>Use <code>snowflake/cpu</code> and <code>snowflake/memory</code> to request CPU and memory for one run.</p>
-<p>By default, run workers use <code>0.25</code> vCPU and <code>512Mi</code> memory. This matches Dagster ECS' default Linux run-task resources. If <code>dagster.yaml</code> sets launcher-level <code>run_resources</code>, these tags override them for the run.</p>
-<p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;snowflake/cpu&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;snowflake/memory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2Gi&quot;</span>
-<span class="p">}</span>
+<h1 id="rbac">RBAC</h1>
+<p>Snowdag uses Snowflake application roles to control Dagster operations. Admins grant these roles to Snowflake account roles; users do not manage them directly.</p>
+<h2 id="roles">Roles</h2>
+<table>
+<thead>
+<tr>
+<th>Application role</th>
+<th>Snowdag role</th>
+<th>Can do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>APP_VIEWER</code></td>
+<td><code>VIEWER</code></td>
+<td>Open the UI and read Dagster state.</td>
+</tr>
+<tr>
+<td><code>APP_LAUNCHER</code></td>
+<td><code>LAUNCHER</code></td>
+<td>Launch, reexecute, terminate, and delete runs.</td>
+</tr>
+<tr>
+<td><code>APP_EDITOR</code></td>
+<td><code>EDITOR</code></td>
+<td>Manage schedules, sensors, backfills, assets, dynamic partitions, concurrency, and existing code-location images.</td>
+</tr>
+<tr>
+<td><code>APP_ADMIN</code></td>
+<td><code>ADMIN</code></td>
+<td>Register, remove, reload, or shut down code locations and call app admin procedures.</td>
+</tr>
+</tbody>
+</table>
+<p>Admin grant example:</p>
+<div class="highlight"><pre><span></span><code><span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_VIEWER</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">analyst</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_LAUNCHER</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">service_runner</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_EDITOR</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">data_engineer</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">APP_ADMIN</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">platform_admin</span><span class="p">;</span>
 </code></pre></div>
-<p>CPU values must be positive vCPU quantities such as <code>0.5</code>, <code>1</code>, or <code>500m</code>. Memory values must include a Snowflake-supported unit: <code>M</code>, <code>Mi</code>, <code>G</code>, or <code>Gi</code>.</p>
-<h2 id="external-access-integrations">External Access Integrations</h2>
-<p>Use <code>snowflake/external_access_integrations</code> when a run needs outbound network access allowed by a Snowflake external access integration.</p>
-<p>The value can be a comma-separated string:</p>
-<div class="highlight"><pre><span></span><code>OPENAI_EAI,SLACK_EAI
-</code></pre></div>
-<p>Or a JSON string array:</p>
-<div class="highlight"><pre><span></span><code><span class="p">[</span><span class="s2">&quot;OPENAI_EAI&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SLACK_EAI&quot;</span><span class="p">]</span>
-</code></pre></div>
-<p>Each value must be an unquoted Snowflake identifier.</p>
-<p>The installed application must have <code>USAGE</code> on every integration used by the run:</p>
-<div class="highlight"><pre><span></span><code><span class="k">GRANT</span><span class="w"> </span><span class="k">USAGE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">INTEGRATION</span><span class="w"> </span><span class="n">OPENAI_EAI</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">;</span>
-</code></pre></div>
-<h2 id="secrets">Secrets</h2>
-<p>Use <code>snowflake/secrets</code> when a run needs Snowflake secrets as environment variables. The value must be a JSON string array:</p>
-<div class="highlight"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;snowflakeSecret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SNOWDAG_CONSUMER_DB.EAI_PROBE.API_TOKEN&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;secretKeyRef&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret_string&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;envVarName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MY_API_KEY&quot;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div>
-<p>Fields:</p>
+<h2 id="choosing-roles">Choosing Roles</h2>
 <ul>
-<li><code>snowflakeSecret</code>: Snowflake secret name, unqualified or dotted, such as <code>DATABASE.SCHEMA.SECRET_NAME</code>.</li>
-<li><code>secretKeyRef</code>: key exposed by the Snowflake secret, such as <code>secret_string</code> or <code>password</code>.</li>
-<li><code>envVarName</code>: environment variable name inside the run worker.</li>
+<li>Give <code>APP_VIEWER</code> to users who inspect jobs, assets, run history, and logs.</li>
+<li>Give <code>APP_LAUNCHER</code> to users who launch or stop runs.</li>
+<li>Give <code>APP_EDITOR</code> to users who manage schedules, sensors, backfills, concurrency, or existing code-location images.</li>
+<li>Give <code>APP_ADMIN</code> only to Snowdag operators.</li>
 </ul>
-<p>The installed application needs <code>USAGE</code> on the secret schema and <code>READ</code> on each secret:</p>
-<div class="highlight"><pre><span></span><code><span class="k">GRANT</span><span class="w"> </span><span class="k">USAGE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">SNOWDAG_CONSUMER_DB</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">;</span>
-<span class="k">GRANT</span><span class="w"> </span><span class="k">USAGE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="n">SNOWDAG_CONSUMER_DB</span><span class="p">.</span><span class="n">EAI_PROBE</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">;</span>
-<span class="k">GRANT</span><span class="w"> </span><span class="k">READ</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">SECRET</span><span class="w"> </span><span class="n">SNOWDAG_CONSUMER_DB</span><span class="p">.</span><span class="n">EAI_PROBE</span><span class="p">.</span><span class="n">API_TOKEN</span>
-<span class="w">  </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">;</span>
-</code></pre></div>
-<p>Secret injection is independent from external access integrations. If a run sets both tags, Snowflake validates whether the integration allows the selected secrets.</p>
-<h2 id="example-dagster-launch-tags">Example Dagster Launch Tags</h2>
-<p>When launching a run through Dagster GraphQL or any Dagster API that accepts execution metadata, pass tags as strings:</p>
-<div class="highlight"><pre><span></span><code><span class="p">[</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;snowflake/cpu&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.5&quot;</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;snowflake/memory&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2Gi&quot;</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;snowflake/external_access_integrations&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OPENAI_EAI&quot;</span>
-<span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;snowflake/secrets&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[{\&quot;snowflakeSecret\&quot;:\&quot;SNOWDAG_CONSUMER_DB.EAI_PROBE.API_TOKEN\&quot;,\&quot;secretKeyRef\&quot;:\&quot;secret_string\&quot;,\&quot;envVarName\&quot;:\&quot;MY_API_KEY\&quot;}]&quot;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div>
-<p>Snowdag validates tag values before creating the run-worker job service. Invalid resources, identifiers, JSON, duplicate environment variable names, or missing required fields fail the launch.</p>
+<h2 id="operation-mapping">Operation Mapping</h2>
+<p>Roles are hierarchical. <code>APP_EDITOR</code> includes <code>APP_LAUNCHER</code>; <code>APP_ADMIN</code> includes all permissions below.</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Required role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>launchRun</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>launchPipelineExecution</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>launchRunReexecution</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>launchPipelineReexecution</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>terminateRun</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>terminatePipelineExecution</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>terminateRuns</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>deleteRun</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>deletePipelineRun</code></td>
+<td><code>APP_LAUNCHER</code></td>
+</tr>
+<tr>
+<td><code>startSchedule</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>stopRunningSchedule</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>resetSchedule</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>scheduleDryRun</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>startSensor</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>stopSensor</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>resetSensor</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>setSensorCursor</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>sensorDryRun</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>wipeAssets</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>reportRunlessAssetEvents</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>setAutoMaterializePaused</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>launchPartitionBackfill</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>launchBackfill</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>cancelPartitionBackfill</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>resumePartitionBackfill</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>reexecutePartitionBackfill</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>addDynamicPartition</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>deleteDynamicPartitions</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>launchMultipleRuns</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>setConcurrencyLimit</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>deleteConcurrencyLimit</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>freeConcurrencySlotsForRun</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>freeConcurrencySlots</code></td>
+<td><code>APP_EDITOR</code></td>
+</tr>
+<tr>
+<td><code>reloadRepositoryLocation</code></td>
+<td><code>APP_ADMIN</code></td>
+</tr>
+<tr>
+<td><code>reloadWorkspace</code></td>
+<td><code>APP_ADMIN</code></td>
+</tr>
+<tr>
+<td><code>shutdownRepositoryLocation</code></td>
+<td><code>APP_ADMIN</code></td>
+</tr>
+</tbody>
+</table>
 
 
 
