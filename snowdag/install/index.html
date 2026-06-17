@@ -618,23 +618,19 @@
 </code></pre></div>
 <p>Build and push your Dagster code image to that repository. The image must expose the Python module with your Dagster definitions and include <code>dagster-postgres</code>, because run workers use Snowdag's PostgreSQL-backed Dagster storage.</p>
 <h2 id="add-a-code-location">Add a Code Location</h2>
-<p>Register the code-location service:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
+<p>Add the code-location service:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">);</span>
+</code></pre></div>
+<p>Snowdag creates an app-owned code location named <code>FINANCE</code> with its bundled placeholder image. Provide the real user code-server image with <code>update_code_location_image</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
 <span class="p">);</span>
 </code></pre></div>
-<p>Snowdag creates an app-owned code location named <code>FINANCE</code>.</p>
-<p>If the real image is not ready yet, an <code>APP_ADMIN</code> can register the location with the bundled hello-world image by passing an empty image string:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;&#39;</span>
-<span class="p">);</span>
-</code></pre></div>
-<p>Use the four-argument form when automation should wait for readiness:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
+<p>If the real image is not ready yet, an <code>APP_ADMIN</code> can add the location first and run <code>update_code_location_image</code> later.</p>
+<p>Use the four-argument update form when automation should wait for readiness:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>

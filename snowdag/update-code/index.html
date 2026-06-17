@@ -606,26 +606,28 @@ docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"
 <span class="w">  </span>-t<span class="w"> </span>&lt;registry&gt;/finance-dagster:2026-06-01<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--push<span class="w"> </span>.
 </code></pre></div>
-<p>Use the Snowflake image path when registering or updating the code location:</p>
+<p>Use the Snowflake image path when adding or updating the code location:</p>
 <div class="highlight"><pre><span></span><code>/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01
 </code></pre></div>
 <h2 id="update-an-existing-code-location">Update an Existing Code Location</h2>
-<p>After an <code>APP_ADMIN</code> registers a code location, an <code>APP_EDITOR</code> can update code by pushing a new image version and calling:</p>
+<p>After an <code>APP_ADMIN</code> adds a code location, an <code>APP_EDITOR</code> can update code by pushing a new image version and calling:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span>
+<span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
 <span class="p">);</span>
 </code></pre></div>
 <p>Use the blocking form when a release script should fail if the new code server does not become ready:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="k">TRUE</span>
 <span class="p">);</span>
 </code></pre></div>
 <h2 id="refresh-dagster">Refresh Dagster</h2>
 <p>Updating an existing code-location image does not require reinstalling Snowdag. If Dagster does not show the latest code, reload the code location in the Dagster UI.</p>
-<p>Adding or removing a code location changes the Snowflake service list. The webserver and daemon refresh their workspace from running services in the code-location schema, so <code>register_code_location</code> and <code>remove_code_location</code> do not restart <code>core.dagster</code>.</p>
+<p>Adding or removing a code location changes the Snowflake service list. The webserver and daemon refresh their workspace from running services in the code-location schema, so <code>add_code_location</code> and <code>remove_code_location</code> do not restart <code>core.dagster</code>.</p>
 <p>Restart the control plane manually when needed:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">restart_dagster</span><span class="p">();</span>
 </code></pre></div>

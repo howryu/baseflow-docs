@@ -424,10 +424,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#register_code_location" class="md-nav__link">
+  <a href="#add_code_location" class="md-nav__link">
     <span class="md-ellipsis">
       
-        register_code_location
+        add_code_location
       
     </span>
   </a>
@@ -761,10 +761,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#register_code_location" class="md-nav__link">
+  <a href="#add_code_location" class="md-nav__link">
     <span class="md-ellipsis">
       
-        register_code_location
+        add_code_location
       
     </span>
   </a>
@@ -1070,17 +1070,16 @@ Returns logs from a <code>core.dagster</code> container.</p>
 </li>
 </ul>
 <h2 id="code-locations">Code Locations</h2>
-<h3 id="register_code_location"><code>register_code_location</code></h3>
+<h3 id="add_code_location"><code>add_code_location</code></h3>
 <ul>
 <li>
 <p>Signature:
-<div class="highlight"><pre><span></span><code><span class="n">register_code_location</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="n">add_code_location</span><span class="p">(</span>
 <span class="w">  </span><span class="n">code_location_name</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
-<span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
-<span class="w">  </span><span class="n">module_name</span><span class="w"> </span><span class="n">STRING</span>
+<span class="w">  </span><span class="n">blocking</span><span class="w"> </span><span class="nb">BOOLEAN</span>
 <span class="p">)</span>
 </code></pre></div>
-Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schema. This is a create-only operation and fails if the service already exists.</p>
+Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schema with Snowdag's bundled placeholder image. This is a create-only operation and fails if the service already exists. The one-argument form omits <code>blocking</code> and returns after requesting service creation. Use <code>update_code_location_image</code> to provide the real user code-server image.</p>
 </li>
 <li>
 <p>Arguments:</p>
@@ -1101,14 +1100,9 @@ Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schem
 <td>Code location name. Must start with a letter and contain only letters, numbers, and underscores. Snowdag stores it uppercase.</td>
 </tr>
 <tr>
-<td><code>image</code></td>
-<td>Yes</td>
-<td>Snowflake image repository path for the code-server image. Pass an empty string to use Snowdag's bundled hello-world code server image.</td>
-</tr>
-<tr>
-<td><code>module_name</code></td>
-<td>Yes</td>
-<td>Python module containing Dagster definitions, for example <code>finance.definitions</code>. Ignored when <code>image</code> is an empty string.</td>
+<td><code>blocking</code></td>
+<td>No</td>
+<td>When <code>TRUE</code>, waits up to 5 minutes for the placeholder code-server container to report <code>READY</code>. When omitted, <code>FALSE</code>, or <code>NULL</code>, returns after requesting service creation.</td>
 </tr>
 </tbody>
 </table>
@@ -1118,32 +1112,35 @@ Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schem
 </li>
 <li>
 <p>Example:
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">);</span>
+</code></pre></div></p>
+</li>
+</ul>
+<p>Then provide the real user code-server image:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
 <span class="p">);</span>
 </code></pre></div>
-If the real image is not ready yet, register with the bundled hello-world image:
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">register_code_location</span><span class="p">(</span>
+<p>Use <code>blocking</code> when automation should fail if the placeholder code server does not become ready:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="k">TRUE</span>
 <span class="p">);</span>
-</code></pre></div></p>
-</li>
-</ul>
+</code></pre></div>
 <h3 id="update_code_location_image"><code>update_code_location_image</code></h3>
 <ul>
 <li>
 <p>Signature:
 <div class="highlight"><pre><span></span><code><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="n">code_location_name</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
-<span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="n">STRING</span>
+<span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+<span class="w">  </span><span class="n">module_name</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
+<span class="w">  </span><span class="n">blocking</span><span class="w"> </span><span class="nb">BOOLEAN</span>
 <span class="p">)</span>
 </code></pre></div>
-Updates only the image for an existing code-location service. Snowdag preserves the module name from the current service spec and fails if the service does not exist.</p>
+Updates the image and module name for an existing code-location service. The three-argument form omits <code>blocking</code> and returns after requesting service update.</p>
 </li>
 <li>
 <p>Arguments:</p>
@@ -1168,6 +1165,16 @@ Updates only the image for an existing code-location service. Snowdag preserves 
 <td>Yes</td>
 <td>New Snowflake image repository path. Empty strings are not allowed.</td>
 </tr>
+<tr>
+<td><code>module_name</code></td>
+<td>Yes</td>
+<td>Python module containing Dagster definitions in the new image, for example <code>finance.definitions</code>.</td>
+</tr>
+<tr>
+<td><code>blocking</code></td>
+<td>No</td>
+<td>When <code>TRUE</code>, waits up to 5 minutes for all code-server containers to report <code>READY</code>. When omitted, <code>FALSE</code>, or <code>NULL</code>, returns after requesting service update.</td>
+</tr>
 </tbody>
 </table>
 <ul>
@@ -1178,7 +1185,16 @@ Updates only the image for an existing code-location service. Snowdag preserves 
 <p>Example:
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span>
+<span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
+<span class="p">);</span>
+</code></pre></div>
+Use <code>blocking</code> when automation should fail if the updated code-server container does not become ready:
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">snowdag_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
+<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;/SNOWDAG_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="k">TRUE</span>
 <span class="p">);</span>
 </code></pre></div></p>
 </li>
