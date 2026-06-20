@@ -592,17 +592,18 @@
 <p>Build and push your Dagster code image to that repository. The image must expose the Python module with your Dagster definitions and include <code>dagster-postgres</code>, because run workers use Dagflow's PostgreSQL-backed Dagster storage.</p>
 <h2 id="add-a-code-location">Add a Code Location</h2>
 <p>Add the code-location service:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">FALSE</span><span class="p">);</span>
 </code></pre></div>
 <p>Dagflow creates an app-owned code location named <code>FINANCE</code> with its bundled placeholder image. Provide the real user code-server image with <code>update_code_location_image</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="k">FALSE</span>
 <span class="p">);</span>
 </code></pre></div>
 <p>If the real image is not ready yet, an <code>APP_ADMIN</code> can add the location first and run <code>update_code_location_image</code> later.</p>
-<p>Use the four-argument update form when automation should wait for readiness:</p>
+<p>Pass <code>TRUE</code> for <code>blocking</code> when automation should wait for readiness:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>

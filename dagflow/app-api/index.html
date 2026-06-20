@@ -1052,7 +1052,7 @@ Returns logs from a <code>core.dagster</code> container.</p>
 <span class="w">  </span><span class="n">blocking</span><span class="w"> </span><span class="nb">BOOLEAN</span>
 <span class="p">)</span>
 </code></pre></div>
-Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schema with Dagflow's bundled placeholder image. This is a create-only operation and fails if the service already exists. The one-argument form omits <code>blocking</code> and returns after requesting service creation. Use <code>update_code_location_image</code> to provide the real user code-server image.</p>
+Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schema with Dagflow's bundled placeholder image. This is a create-only operation and fails if the service already exists. Pass <code>FALSE</code> to return after requesting service creation, or <code>TRUE</code> to wait for readiness. Use <code>update_code_location_image</code> to provide the real user code-server image.</p>
 </li>
 <li>
 <p>Arguments:</p>
@@ -1074,8 +1074,8 @@ Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schem
 </tr>
 <tr>
 <td><code>blocking</code></td>
-<td>No</td>
-<td>When <code>TRUE</code>, waits up to 5 minutes for the placeholder code-server container to report <code>READY</code>. When omitted, <code>FALSE</code>, or <code>NULL</code>, returns after requesting service creation.</td>
+<td>Yes</td>
+<td>When <code>TRUE</code>, waits up to 5 minutes for the placeholder code-server container to report <code>READY</code>. When <code>FALSE</code> or <code>NULL</code>, returns after requesting service creation.</td>
 </tr>
 </tbody>
 </table>
@@ -1085,7 +1085,7 @@ Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schem
 </li>
 <li>
 <p>Example:
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">FALSE</span><span class="p">);</span>
 </code></pre></div></p>
 </li>
 </ul>
@@ -1093,7 +1093,8 @@ Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schem
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="k">FALSE</span>
 <span class="p">);</span>
 </code></pre></div>
 <p>Use <code>blocking</code> when automation should fail if the placeholder code server does not become ready:</p>
@@ -1113,7 +1114,7 @@ Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schem
 <span class="w">  </span><span class="n">blocking</span><span class="w"> </span><span class="nb">BOOLEAN</span>
 <span class="p">)</span>
 </code></pre></div>
-Updates the image and module name for an existing code-location service. The three-argument form omits <code>blocking</code> and returns after requesting service update.</p>
+Updates the image and module name for an existing code-location service. Pass <code>FALSE</code> to return after requesting service update, or <code>TRUE</code> to wait for readiness.</p>
 </li>
 <li>
 <p>Arguments:</p>
@@ -1145,8 +1146,8 @@ Updates the image and module name for an existing code-location service. The thr
 </tr>
 <tr>
 <td><code>blocking</code></td>
-<td>No</td>
-<td>When <code>TRUE</code>, waits up to 5 minutes for all code-server containers to report <code>READY</code>. When omitted, <code>FALSE</code>, or <code>NULL</code>, returns after requesting service update.</td>
+<td>Yes</td>
+<td>When <code>TRUE</code>, waits up to 5 minutes for all code-server containers to report <code>READY</code>. When <code>FALSE</code> or <code>NULL</code>, returns after requesting service update.</td>
 </tr>
 </tbody>
 </table>
@@ -1159,7 +1160,8 @@ Updates the image and module name for an existing code-location service. The thr
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="k">FALSE</span>
 <span class="p">);</span>
 </code></pre></div>
 Use <code>blocking</code> when automation should fail if the updated code-server container does not become ready:

@@ -587,10 +587,11 @@ docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span>
+<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="k">FALSE</span>
 <span class="p">);</span>
 </code></pre></div>
-<p>Use the blocking form when a release script should fail if the new code server does not become ready:</p>
+<p>Pass <code>TRUE</code> for <code>blocking</code> when a release script should fail if the new code server does not become ready:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
 <span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
 <span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
