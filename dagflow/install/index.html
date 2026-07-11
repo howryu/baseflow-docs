@@ -311,10 +311,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prepare-a-code-image-repository" class="md-nav__link">
+  <a href="#prepare-pex-artifacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prepare a Code Image Repository
+        Prepare PEX Artifacts
       
     </span>
   </a>
@@ -508,10 +508,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prepare-a-code-image-repository" class="md-nav__link">
+  <a href="#prepare-pex-artifacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prepare a Code Image Repository
+        Prepare PEX Artifacts
       
     </span>
   </a>
@@ -560,7 +560,7 @@
 <h1 id="installation">Installation</h1>
 <h2 id="prerequisites">Prerequisites</h2>
 <p>You need a Snowflake role that can install the Dagflow Native App and grant its requested privileges. The app needs account-level privileges to create compute pools and bind service endpoints.</p>
-<p>You also need a Snowflake image repository with your Dagster code-server image. Dagflow uses the same image for run workers, so it must include your project code and the dependencies needed by both the gRPC code server and <code>dagster api execute_run</code>.</p>
+<p>You also need PEX artifacts for each Dagster code location: <code>source.pex</code> for project code and <code>deps.pex</code> for third-party dependencies.</p>
 <h2 id="install-the-app">Install the App</h2>
 <p>If you install from the Snowflake Marketplace UI, follow the UI prompts and skip this section. To run the same steps manually, continue below.</p>
 <p>After installation, grant requested privileges if they were not auto-granted:</p>
@@ -578,39 +578,20 @@
 <span class="k">GRANT</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">APP_ADMIN</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="o">&lt;</span><span class="n">admin_role</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Use the least powerful role that fits each user. See <a href="../rbac/">RBAC</a> for allowed actions.</p>
-<h2 id="prepare-a-code-image-repository">Prepare a Code Image Repository</h2>
-<p>Create an image repository for containers with your Dagster definition code, then grant Dagflow access:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">DAGFLOW_CONSUMER_DB</span><span class="p">;</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">DAGFLOW_CONSUMER_DB</span><span class="p">.</span><span class="n">CODE</span><span class="p">;</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="n">IMAGE</span><span class="w"> </span><span class="n">REPOSITORY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">DAGFLOW_CONSUMER_DB</span><span class="p">.</span><span class="n">CODE</span><span class="p">.</span><span class="n">CONSUMER_REPO</span><span class="p">;</span>
-
-<span class="k">GRANT</span><span class="w"> </span><span class="k">USAGE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">DAGFLOW_CONSUMER_DB</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">;</span>
-<span class="k">GRANT</span><span class="w"> </span><span class="k">USAGE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="n">DAGFLOW_CONSUMER_DB</span><span class="p">.</span><span class="n">CODE</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">;</span>
-<span class="k">GRANT</span><span class="w"> </span><span class="k">READ</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">IMAGE</span><span class="w"> </span><span class="n">REPOSITORY</span><span class="w"> </span><span class="n">DAGFLOW_CONSUMER_DB</span><span class="p">.</span><span class="n">CODE</span><span class="p">.</span><span class="n">CONSUMER_REPO</span>
-<span class="w">  </span><span class="k">TO</span><span class="w"> </span><span class="n">APPLICATION</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">;</span>
-</code></pre></div>
-<p>Build and push your Dagster code image to that repository. The image must expose the Python module with your Dagster definitions and include <code>dagster-postgres</code>, because run workers use Dagflow's PostgreSQL-backed Dagster storage.</p>
+<h2 id="prepare-pex-artifacts">Prepare PEX Artifacts</h2>
+<p>Build your Dagster project into <code>source.pex</code> and <code>deps.pex</code>, then upload those files to the app-managed PEX stage with <code>AUTO_COMPRESS=FALSE</code>.</p>
 <h2 id="add-a-code-location">Add a Code Location</h2>
-<p>Add the code-location service:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">FALSE</span><span class="p">);</span>
+<p>Upload and deploy the code-location version:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>add<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--app-name<span class="w"> </span>dagflow_app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--version<span class="w"> </span><span class="m">2026</span>-05-29<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--module-name<span class="w"> </span>finance.definitions<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--source-pex<span class="w"> </span>source.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--deps-pex<span class="w"> </span>deps.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--blocking
 </code></pre></div>
-<p>Dagflow creates an app-owned code location named <code>FINANCE</code> with its bundled placeholder image. Provide the real user code-server image with <code>update_code_location_image</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">FALSE</span>
-<span class="p">);</span>
-</code></pre></div>
-<p>If the real image is not ready yet, an <code>APP_ADMIN</code> can add the location first and run <code>update_code_location_image</code> later.</p>
-<p>Pass <code>TRUE</code> for <code>blocking</code> when automation should wait for readiness:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-05-29&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">TRUE</span>
-<span class="p">);</span>
-</code></pre></div>
+<p>Dagflow creates an app-owned code location named <code>FINANCE</code> with the provider-owned runtime image and records the desired PEX version in the service comment.</p>
+<p>Pass <code>--no-blocking</code> when automation should return after requesting the service update instead of waiting for readiness.</p>
 <p>After the service is ready, open the Dagster UI from the Snowflake service endpoint for <code>core.dagster</code>.</p>
 <h2 id="compute-resources">Compute Resources</h2>
 <p>Dagflow creates three SPCS compute pools in the consumer account:</p>

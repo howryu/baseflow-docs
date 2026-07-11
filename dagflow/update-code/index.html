@@ -370,10 +370,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#build-a-code-location-image" class="md-nav__link">
+  <a href="#build-pex-artifacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Build a Code Location Image
+        Build PEX Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-with-snowflake-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy with Snowflake CLI
       
     </span>
   </a>
@@ -475,10 +486,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#build-a-code-location-image" class="md-nav__link">
+  <a href="#build-pex-artifacts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Build a Code Location Image
+        Build PEX Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-with-snowflake-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy with Snowflake CLI
       
     </span>
   </a>
@@ -537,12 +559,15 @@
 
 <h1 id="code-location">Code Location</h1>
 <p>Dagster separates the control plane from user code. See the <a href="https://dagster.io/blog/dagster-code-locations">Dagster code locations architecture</a> for details.</p>
-<p>To update a code location, rebuild the Docker image with your Dagster definitions and push it to the Snowflake SPCS image registry. Dagflow uses the registered code-server image as the run-worker image for runs from that code location, so the image must include <code>dagster-postgres</code> as well as your project dependencies.</p>
-<h2 id="build-a-code-location-image">Build a Code Location Image</h2>
-<p>A code-location image should contain your Dagster definitions module, Dagster, <code>dagster-postgres</code>, and any Python or system dependencies your jobs need at run time.</p>
+<p>To update a code location, build a new <code>source.pex</code> and <code>deps.pex</code>, upload them to the app-managed PEX stage, and point the service comment at the new version with <code>deploy_code_location</code>.</p>
+<h2 id="build-pex-artifacts">Build PEX Artifacts</h2>
+<p>The runtime expects two files per code-location version:</p>
+<ul>
+<li><code>source.pex</code>: your Dagster definitions and project code.</li>
+<li><code>deps.pex</code>: third-party dependencies needed by that project code.</li>
+</ul>
 <p>Example project layout:</p>
 <div class="highlight"><pre><span></span><code>.
-|-- Dockerfile
 |-- requirements.txt
 `-- finance
     |-- __init__.py
@@ -553,63 +578,93 @@
 dagster-postgres==0.28.1
 snowflake-connector-python&gt;=3.15,&lt;4
 </code></pre></div>
-<p>Example <code>Dockerfile</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span>
-
-<span class="k">ENV</span><span class="w"> </span><span class="nv">DAGSTER_HOME</span><span class="o">=</span>/opt/dagster/app<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">PYTHONUNBUFFERED</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="nv">PIP_NO_CACHE_DIR</span><span class="o">=</span><span class="m">1</span>
-
-<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/opt/dagster/app</span>
-
-<span class="k">COPY</span><span class="w"> </span>requirements.txt<span class="w"> </span>./
-<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-
-<span class="k">COPY</span><span class="w"> </span>finance<span class="w"> </span>./finance
-
-<span class="k">EXPOSE</span><span class="w"> </span><span class="s">4000</span>
-
-<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;dagster&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;api&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;grpc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--module-name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;finance.definitions&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--host&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--port&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;4000&quot;</span><span class="p">]</span>
+<p>Use a stable version string when staging PEX artifacts:</p>
+<div class="highlight"><pre><span></span><code>@dagflow_app.core.pex/finance/2026-06-01/source.pex
+@dagflow_app.core.pex/finance/2026-06-01/deps.pex
 </code></pre></div>
-<p>Build and push the image to the Snowflake image repository that the Dagflow app can read:</p>
-<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>spcs<span class="w"> </span>image-registry<span class="w"> </span>login
-
-docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/arm64<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-t<span class="w"> </span>&lt;registry&gt;/finance-dagster:2026-06-01<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--push<span class="w"> </span>.
+<h2 id="deploy-with-snowflake-cli">Deploy with Snowflake CLI</h2>
+<p>Install Dagflow with the CLI extra in the same environment as Snowflake CLI:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;dagflow[cli]&quot;</span>
 </code></pre></div>
-<p>Use the Snowflake image path when adding or updating the code location:</p>
-<div class="highlight"><pre><span></span><code>/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01
+<p>Enable the external plugin in your Snowflake CLI config:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[cli.plugins.dg]</span>
+<span class="n">enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
 </code></pre></div>
+<p>Then use your existing Snowflake CLI connection to build, upload, and deploy.
+For a Dagster <code>dg</code> project, Dagflow infers the code-location name and target
+module from <code>[tool.dg]</code>:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>deploy<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--app-name<span class="w"> </span>dagflow_app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--path<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--version<span class="w"> </span><span class="m">2026</span>-06-01<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--blocking
+</code></pre></div>
+<p>For a non-<code>dg</code> project, pass the code-location name and one explicit entrypoint:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>deploy<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--app-name<span class="w"> </span>dagflow_app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--path<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--version<span class="w"> </span><span class="m">2026</span>-06-01<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--module-name<span class="w"> </span>finance.definitions<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--blocking
+</code></pre></div>
+<p>The plugin builds <code>source.pex</code> and <code>deps.pex</code> in a temporary directory, uploads
+them to <code>@dagflow_app.core.pex/finance/2026-06-01/</code>, and calls the Dagflow
+server code-location API. Pass <code>--output-dir</code> only when you want to keep the
+generated files locally for inspection or reuse.</p>
+<p>If you have already built PEX artifacts, use <code>code-location add</code> to upload and
+register them without packaging the project again:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>add<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--app-name<span class="w"> </span>dagflow_app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--version<span class="w"> </span><span class="m">2026</span>-06-01<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--module-name<span class="w"> </span>finance.definitions<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--source-pex<span class="w"> </span>dist/dagflow/finance/2026-06-01/source.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--deps-pex<span class="w"> </span>dist/dagflow/finance/2026-06-01/deps.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--blocking
+</code></pre></div>
+<p>Launch a job with Dagster-style job launch naming:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>job<span class="w"> </span>launch<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--app-name<span class="w"> </span>dagflow_app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--job<span class="w"> </span>my_job<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config<span class="w"> </span>run-config.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--tag<span class="w"> </span>snowflake/cpu<span class="o">=</span>500m
+</code></pre></div>
+<p>You can also build artifacts without deploying:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>package<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--location-name<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--version<span class="w"> </span><span class="m">2026</span>-06-01<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--module-name<span class="w"> </span>finance.definitions
+</code></pre></div>
+<p><code>code-location package</code> writes local artifacts under <code>dist/dagflow/&lt;location&gt;/&lt;version&gt;/</code>
+unless you pass <code>--output-dir</code>.</p>
 <h2 id="update-an-existing-code-location">Update an Existing Code Location</h2>
-<p>After an <code>APP_ADMIN</code> adds a code location, an <code>APP_EDITOR</code> can update code by pushing a new image version and calling:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">FALSE</span>
-<span class="p">);</span>
+<p>An <code>APP_EDITOR</code> can update code by deploying a new PEX version:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>add<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--app-name<span class="w"> </span>dagflow_app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--version<span class="w"> </span><span class="m">2026</span>-06-01<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--module-name<span class="w"> </span>finance.definitions<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--source-pex<span class="w"> </span>dist/dagflow/finance/2026-06-01/source.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--deps-pex<span class="w"> </span>dist/dagflow/finance/2026-06-01/deps.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--blocking
 </code></pre></div>
-<p>Pass <code>TRUE</code> for <code>blocking</code> when a release script should fail if the new code server does not become ready:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">TRUE</span>
-<span class="p">);</span>
-</code></pre></div>
+<p>Use <code>--no-blocking</code> when a release script should return after requesting the service update instead of waiting for the new code server to become ready.</p>
 <h2 id="refresh-dagster">Refresh Dagster</h2>
-<p>Updating an existing code-location image does not require reinstalling Dagflow. If Dagster does not show the latest code, reload the code location in the Dagster UI.</p>
-<p>Adding or removing a code location changes the Snowflake service list. The webserver and daemon refresh their workspace from running services in the code-location schema, so <code>add_code_location</code> and <code>remove_code_location</code> do not restart <code>core.dagster</code>.</p>
+<p>Updating an existing code location does not require reinstalling Dagflow. The Dagflow server API updates the service comment, then reloads the code location in Dagster. That calls the PEX host's <code>ReloadCode</code> gRPC method, which activates the latest requested version before Dagster refreshes metadata.</p>
+<p>Adding or removing a code location changes the Snowflake service list. The webserver and daemon refresh their workspace from running services in the code-location schema, so code-location API calls do not restart <code>core.dagster</code>.</p>
+<p>Reload one deployed location from the CLI:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>reload<span class="w"> </span>finance<span class="w"> </span>--app-name<span class="w"> </span>dagflow_app
+</code></pre></div>
+<p>Reload the full Dagster workspace after out-of-band service changes:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>reload-all<span class="w"> </span>--app-name<span class="w"> </span>dagflow_app
+</code></pre></div>
 <p>Restart the control plane manually when needed:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">restart_dagster</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="remove-a-code-location">Remove a Code Location</h2>
 <p>Remove code locations that should no longer appear in Dagster:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">remove_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>delete<span class="w"> </span>finance<span class="w"> </span>--app-name<span class="w"> </span>dagflow_app
 </code></pre></div>
-<p>Dagflow drops the code-location service. The webserver and daemon stop listing it after workspace refresh.</p>
+<p>Dagflow drops the code-location service through the server API. The webserver and daemon stop listing it after workspace refresh.</p>
 
 
 

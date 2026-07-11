@@ -396,45 +396,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Code Locations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#add_code_location" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        add_code_location
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#update_code_location_image" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        update_code_location_image
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#remove_code_location" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        remove_code_location
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -733,45 +694,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Code Locations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#add_code_location" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        add_code_location
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#update_code_location_image" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        update_code_location_image
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#remove_code_location" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        remove_code_location
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -892,7 +814,7 @@
 
 
 <h1 id="app-api-and-operations">App API and Operations</h1>
-<p>App management procedures live in <code>&lt;app_name&gt;.app_public</code>. <code>APP_ADMIN</code> can call all procedures on this page. <code>APP_EDITOR</code> can call only <code>update_code_location_image</code>.</p>
+<p>App management procedures live in <code>&lt;app_name&gt;.app_public</code>. <code>APP_ADMIN</code> can call all procedures on this page. <code>APP_EDITOR</code> can deploy and remove code locations.</p>
 <h2 id="core-services">Core Services</h2>
 <h3 id="start_app"><code>start_app</code></h3>
 <ul>
@@ -1043,176 +965,21 @@ Returns logs from a <code>core.dagster</code> container.</p>
 </li>
 </ul>
 <h2 id="code-locations">Code Locations</h2>
-<h3 id="add_code_location"><code>add_code_location</code></h3>
-<ul>
-<li>
-<p>Signature:
-<div class="highlight"><pre><span></span><code><span class="n">add_code_location</span><span class="p">(</span>
-<span class="w">  </span><span class="n">code_location_name</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
-<span class="w">  </span><span class="n">blocking</span><span class="w"> </span><span class="nb">BOOLEAN</span>
-<span class="p">)</span>
+<p>Code-location management is handled by the Dagflow server API, not Native App stored procedures. Prefer the CLI:</p>
+<div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>add<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--app-name<span class="w"> </span>dagflow_app<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--version<span class="w"> </span>abc123<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--module-name<span class="w"> </span>finance.definitions<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--source-pex<span class="w"> </span>dist/source.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--deps-pex<span class="w"> </span>dist/deps.pex<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--blocking
 </code></pre></div>
-Creates a new code-location service in the app <code>CODE_LOCATIONS</code> schema with Dagflow's bundled placeholder image. This is a create-only operation and fails if the service already exists. Pass <code>FALSE</code> to return after requesting service creation, or <code>TRUE</code> to wait for readiness. Use <code>update_code_location_image</code> to provide the real user code-server image.</p>
-</li>
-<li>
-<p>Arguments:</p>
-</li>
+<p>Low-level clients can upload PEX artifacts to <code>@core.pex/&lt;location&gt;/&lt;version&gt;/</code> and call:</p>
+<ul>
+<li><code>PUT /code-locations/{name}</code> with JSON body <code>{"version":"abc123","entrypoint":{"type":"module","name":"finance.definitions"},"blocking":true}</code>.</li>
+<li><code>DELETE /code-locations/{name}</code> to remove a location.</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th>Argument</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>code_location_name</code></td>
-<td>Yes</td>
-<td>Code location name. Must start with a letter and contain only letters, numbers, and underscores. Dagflow stores it uppercase.</td>
-</tr>
-<tr>
-<td><code>blocking</code></td>
-<td>Yes</td>
-<td>When <code>TRUE</code>, waits up to 5 minutes for the placeholder code-server container to report <code>READY</code>. When <code>FALSE</code> or <code>NULL</code>, returns after requesting service creation.</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>
-<p>Required role: <code>APP_ADMIN</code>.</p>
-</li>
-<li>
-<p>Example:
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">FALSE</span><span class="p">);</span>
-</code></pre></div></p>
-</li>
-</ul>
-<p>Then provide the real user code-server image:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">FALSE</span>
-<span class="p">);</span>
-</code></pre></div>
-<p>Use <code>blocking</code> when automation should fail if the placeholder code server does not become ready:</p>
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">add_code_location</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">TRUE</span>
-<span class="p">);</span>
-</code></pre></div>
-<h3 id="update_code_location_image"><code>update_code_location_image</code></h3>
-<ul>
-<li>
-<p>Signature:
-<div class="highlight"><pre><span></span><code><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="n">code_location_name</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
-<span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
-<span class="w">  </span><span class="n">module_name</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span>
-<span class="w">  </span><span class="n">blocking</span><span class="w"> </span><span class="nb">BOOLEAN</span>
-<span class="p">)</span>
-</code></pre></div>
-Updates the image and module name for an existing code-location service. Pass <code>FALSE</code> to return after requesting service update, or <code>TRUE</code> to wait for readiness.</p>
-</li>
-<li>
-<p>Arguments:</p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Argument</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>code_location_name</code></td>
-<td>Yes</td>
-<td>Existing code location name. Must start with a letter and contain only letters, numbers, and underscores.</td>
-</tr>
-<tr>
-<td><code>image</code></td>
-<td>Yes</td>
-<td>New Snowflake image repository path. Empty strings are not allowed.</td>
-</tr>
-<tr>
-<td><code>module_name</code></td>
-<td>Yes</td>
-<td>Python module containing Dagster definitions in the new image, for example <code>finance.definitions</code>.</td>
-</tr>
-<tr>
-<td><code>blocking</code></td>
-<td>Yes</td>
-<td>When <code>TRUE</code>, waits up to 5 minutes for all code-server containers to report <code>READY</code>. When <code>FALSE</code> or <code>NULL</code>, returns after requesting service update.</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>
 <p>Required role: <code>APP_ADMIN</code> or <code>APP_EDITOR</code>.</p>
-</li>
-<li>
-<p>Example:
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">FALSE</span>
-<span class="p">);</span>
-</code></pre></div>
-Use <code>blocking</code> when automation should fail if the updated code-server container does not become ready:
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">update_code_location_image</span><span class="p">(</span>
-<span class="w">  </span><span class="s1">&#39;finance&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;/DAGFLOW_CONSUMER_DB/CODE/CONSUMER_REPO/finance-dagster:2026-06-01&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="s1">&#39;finance.definitions&#39;</span><span class="p">,</span>
-<span class="w">  </span><span class="k">TRUE</span>
-<span class="p">);</span>
-</code></pre></div></p>
-</li>
-</ul>
-<h3 id="remove_code_location"><code>remove_code_location</code></h3>
-<ul>
-<li>
-<p>Signature:
-<div class="highlight"><pre><span></span><code><span class="n">remove_code_location</span><span class="p">(</span><span class="n">code_location_name</span><span class="w"> </span><span class="n">STRING</span><span class="p">)</span>
-</code></pre></div>
-Drops an existing code-location service. This removes it from Dagster after workspace refresh.</p>
-</li>
-<li>
-<p>Arguments:</p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Argument</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>code_location_name</code></td>
-<td>Yes</td>
-<td>Code location name to drop. Must start with a letter and contain only letters, numbers, and underscores.</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>
-<p>Required role: <code>APP_ADMIN</code>.</p>
-</li>
-<li>
-<p>Example:
-<div class="highlight"><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">dagflow_app</span><span class="p">.</span><span class="n">app_public</span><span class="p">.</span><span class="n">remove_code_location</span><span class="p">(</span><span class="s1">&#39;finance&#39;</span><span class="p">);</span>
-</code></pre></div>
-Dagflow uses the registered code-server image as the run-worker image, so the image must include <code>dagster-postgres</code> and the dependencies needed to execute runs.</p>
-</li>
-</ul>
 <h2 id="restart-and-suspend">Restart and Suspend</h2>
 <h3 id="restart_dagster"><code>restart_dagster</code></h3>
 <ul>
