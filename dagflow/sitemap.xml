@@ -2,30 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://docs.baseflow.biz/dagflow/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://docs.baseflow.biz/dagflow/app-api/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://docs.baseflow.biz/dagflow/install/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://docs.baseflow.biz/dagflow/pex-deployment/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://docs.baseflow.biz/dagflow/rbac/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://docs.baseflow.biz/dagflow/snowflake-run-tags/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://docs.baseflow.biz/dagflow/update-code/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
 </urlset>

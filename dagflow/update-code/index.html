@@ -609,8 +609,11 @@ module from <code>[tool.dg]</code>:</p>
 </code></pre></div>
 <p>The plugin builds <code>source.pex</code> and <code>deps.pex</code> in a temporary directory, uploads
 them to <code>@dagflow_app.core.pex/finance/2026-06-01/</code>, and calls the Dagflow
-server code-location API. Pass <code>--output-dir</code> only when you want to keep the
-generated files locally for inspection or reuse.</p>
+server code-location API. Use <code>code-location package</code> when you want to keep the
+generated files locally for inspection or reuse.
+Use <code>--python-version 3.12</code> when deploying to the Python 3.12 runtime. If the
+requested version differs from the active CLI Python, a matching interpreter
+such as <code>python3.12</code> must be on <code>PATH</code>.</p>
 <p>If you have already built PEX artifacts, use <code>code-location add</code> to upload and
 register them without packaging the project again:</p>
 <div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>add<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
