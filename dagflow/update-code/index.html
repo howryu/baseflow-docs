@@ -564,7 +564,9 @@
 <p>The runtime expects two files per code-location version:</p>
 <ul>
 <li><code>source.pex</code>: your Dagster definitions and project code.</li>
-<li><code>deps.pex</code>: third-party dependencies needed by that project code.</li>
+<li><code>deps.pex</code>: the project's runtime distributions, including Dagster and its
+  PostgreSQL storage integration. The runtime image supplies Dagflow's
+  compute-log manager without dependencies.</li>
 </ul>
 <p>Example project layout:</p>
 <div class="highlight"><pre><span></span><code>.
@@ -578,6 +580,16 @@
 dagster-postgres==0.28.1
 snowflake-connector-python&gt;=3.15,&lt;4
 </code></pre></div>
+<p><code>dagster</code> and <code>dagster-postgres</code> must be direct project requirements. This makes
+the selected <code>deps.pex</code> the only Dagster environment used by both the code
+server and its run workers. The provider-owned image supplies Dagflow's runtime
+extension without dependencies. Use the <code>dagster-postgres</code> companion release
+compatible with the selected Dagster version. Optional and development
+dependency groups are not bundled automatically.</p>
+<p>The builder combines base dependencies declared in <code>requirements.txt</code>,
+<code>setup.py</code>, and <code>pyproject.toml</code>. Relative local packages are built into the
+source artifact recursively. Virtual environments, VCS metadata, caches, and
+build output are excluded from the filtered working source.</p>
 <p>Use a stable version string when staging PEX artifacts:</p>
 <div class="highlight"><pre><span></span><code>@dagflow_app.core.pex/finance/2026-06-01/source.pex
 @dagflow_app.core.pex/finance/2026-06-01/deps.pex

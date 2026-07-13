@@ -530,14 +530,27 @@ image: provider/dagflow-code-location-runtime-py311:&lt;runtime-version&gt;
 command: dagflow-pex-host
 comment: desired PEX version and entrypoint metadata
 </code></pre></div>
-<p>The service runs a small PEX host process. The PEX host reads the service
+<p>The service runs the standalone <code>dagflow-pex-bootstrap</code> package. This bootstrap
+contains the PEX host, an opaque-byte gRPC proxy, and Snowflake artifact download
+support; it does not install or import Dagster. The host reads the service
 comment, derives artifact paths from the service name and version, and starts a
 Dagster gRPC subprocess from the staged PEX files.</p>
 <p>The code-location runtime image is separate from the Dagflow control-plane
 image. Dagflow publishes Python-versioned runtime variants, such as
 <code>dagflow-code-location-runtime-py311</code> and <code>dagflow-code-location-runtime-py312</code>,
 so code locations and run workers can use a different Python runtime than the
-webserver/daemon.</p>
+webserver/daemon. <code>deps.pex</code> is the sole Dagster provider for both processes.
+The control-plane image remains pinned to the app's Dagster version.</p>
+<p>The image installs Dagflow's runtime extension into <code>/opt/dagflow/runtime</code> with
+<code>--no-deps</code>. Its tested Dagster range is currently <code>&gt;=1.12,&lt;1.13</code>, while the
+user project's direct Dagster requirement selects the exact version inside
+<code>deps.pex</code>. Expanding to a new Dagster minor requires testing and releasing a
+compatible runtime image; it does not require adding Dagster to the image.</p>
+<p>Each runtime variant is pinned to the ARM64 Python image digest recorded in
+<code>dagflow_cli/runtime-platforms.json</code>. That file also contains the checked-in
+PEX marker environment and compatible wheel tags for the image's exact Python
+patch release and glibc version. Updating a runtime image and its platform
+manifest is one release operation.</p>
 <h2 id="artifact-layout">Artifact Layout</h2>
 <p>Use deterministic paths on a Dagflow-managed internal stage:</p>
 <div class="highlight"><pre><span></span><code>@CORE.PEX/&lt;location_name&gt;/&lt;version&gt;/source.pex
@@ -605,12 +618,29 @@ method to the active user-code subprocess on an internal port.</p>
 4. Copy source.pex and deps.pex from the derived stage paths.
 5. Store the PEX files in a versioned local directory.
 6. Start a new subprocess on an internal port:
-   source.pex -m dagster api grpc ...
-7. Health-check the new Dagster gRPC subprocess.
+   PEX_PATH=deps.pex source.pex -m dagster api grpc ...
+7. Wait for the new Dagster gRPC subprocess port to accept connections.
 8. Re-read the service comment before activation.
 9. If the comment still requests the same version, switch active subprocess.
 10. Stop the old subprocess.
 </code></pre></div>
+<p>The host removes <code>PYTHONPATH</code> and overwrites <code>PEX_EXTRA_SYS_PATH</code> with the fixed
+provider-owned <code>/opt/dagflow/runtime</code> directory before launch. The run worker
+uses the Dagster-free <code>dagflow-pex-run-worker</code> bootstrap command to download the
+same two artifacts and apply the same isolation before running <code>dagster api
+execute_run</code>. Run workers reconstruct a serialized control-plane
+<code>InstanceRef</code> that references the image-provided <code>dagflow_runtime</code> compute-log
+manager and <code>dagster_postgres</code> storage classes. The project must therefore
+declare <code>dagster</code> and <code>dagster-postgres</code> as direct runtime dependencies; the CLI
+fails packaging when either is absent.</p>
+<p>The CLI merges dependencies from <code>requirements.txt</code>, <code>setup.py</code>, and the base
+PEP 621 or Poetry dependency section in <code>pyproject.toml</code>. Relative local package
+requirements are recursively inspected and built into <code>source.pex</code>; third-party
+requirements are resolved into <code>deps.pex</code>. The main project and local packages
+are installed into a staging directory with <code>--no-deps</code>, then combined with a
+filtered source tree that excludes virtual environments, VCS data, caches, and
+build output. Both PEX files retain <code>PEX_*</code> variables for child processes while
+keeping path inheritance disabled.</p>
 <p>On service restart, the PEX host reads the service comment and reconstructs the
 active subprocess from the staged artifacts. After <code>deploy_code_location</code>
 updates the service comment, activation is triggered by Dagster's normal

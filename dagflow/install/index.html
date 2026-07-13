@@ -560,7 +560,14 @@
 <h1 id="installation">Installation</h1>
 <h2 id="prerequisites">Prerequisites</h2>
 <p>You need a Snowflake role that can install the Dagflow Native App and grant its requested privileges. The app needs account-level privileges to create compute pools and bind service endpoints.</p>
-<p>You also need PEX artifacts for each Dagster code location: <code>source.pex</code> for project code and <code>deps.pex</code> for third-party dependencies.</p>
+<p>You also need PEX artifacts for each Dagster code location: <code>source.pex</code> for
+project code and <code>deps.pex</code> for the complete runtime, including direct
+requirements on <code>dagster</code> and <code>dagster-postgres</code>.</p>
+<p>Both runtime requirements must resolve from the package index used by the
+project build. <code>dagster-postgres</code> must be the companion release compatible with
+the project's Dagster version; run workers use its storage classes when they
+reconstruct the control-plane instance. The provider-owned runtime image
+supplies Dagflow's compute-log manager without installing its dependencies.</p>
 <h2 id="install-the-app">Install the App</h2>
 <p>If you install from the Snowflake Marketplace UI, follow the UI prompts and skip this section. To run the same steps manually, continue below.</p>
 <p>After installation, grant requested privileges if they were not auto-granted:</p>
@@ -579,7 +586,10 @@
 </code></pre></div>
 <p>Use the least powerful role that fits each user. See <a href="../rbac/">RBAC</a> for allowed actions.</p>
 <h2 id="prepare-pex-artifacts">Prepare PEX Artifacts</h2>
-<p>Build your Dagster project into <code>source.pex</code> and <code>deps.pex</code>, then upload those files to the app-managed PEX stage with <code>AUTO_COMPRESS=FALSE</code>.</p>
+<p>Build your Dagster project into <code>source.pex</code> and <code>deps.pex</code>, then upload those
+files to the app-managed PEX stage with <code>AUTO_COMPRESS=FALSE</code>. Code-location and
+run-worker images contain only the Dagster-free bootstrap; they never provide a
+fallback Dagster installation.</p>
 <h2 id="add-a-code-location">Add a Code Location</h2>
 <p>Upload and deploy the code-location version:</p>
 <div class="highlight"><pre><span></span><code>snow<span class="w"> </span>dg<span class="w"> </span>code-location<span class="w"> </span>add<span class="w"> </span>finance<span class="w"> </span><span class="se">\</span>
