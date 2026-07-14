@@ -538,8 +538,6 @@
 <p>Dagflow integrates Dagster with Snowflake authentication, RBAC, image repositories, external access integrations, and secrets.</p>
 <h2 id="architecture">Architecture</h2>
 <pre class="mermaid"><code>flowchart LR
-  marketplace["Snowflake Marketplace&lt;br/&gt;Dagflow Native App"]
-
   subgraph consumer["Consumer Snowflake account"]
     users["Users and admins"]
     cli["Dagflow CLI"]
@@ -550,7 +548,6 @@
     resources["Snowflake resources"]
   end
 
-  marketplace --&gt;|"Install"| control
   users --&gt;|"Dagster UI"| control
   cli --&gt;|"Deploy code"| locations
   control &lt;--&gt; locations
