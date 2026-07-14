@@ -260,6 +260,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scope" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -462,6 +473,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scope" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -514,6 +536,47 @@
 <h1 id="overview">Overview</h1>
 <p>Dagflow runs Dagster OSS entirely inside a consumer Snowflake account and security boundary using Snowpark Container Services. The Native App creates the Dagster control plane, code-location services, and autoscaling short-lived run-worker job services.</p>
 <p>Dagflow integrates Dagster with Snowflake authentication, RBAC, image repositories, external access integrations, and secrets.</p>
+<h2 id="architecture">Architecture</h2>
+<pre class="mermaid"><code>flowchart LR
+  provider["Provider&lt;br/&gt;Marketplace listing&lt;br/&gt;Native App package&lt;br/&gt;Container images"]
+
+  subgraph consumer["Consumer Snowflake account"]
+    users["Users and admins&lt;br/&gt;Snowflake identity + RBAC"]
+    cli["Dagflow CLI&lt;br/&gt;snow dg"]
+
+    subgraph app["Dagflow Native App"]
+      subgraph control_pool["Control compute pool"]
+        control["Dagflow control plane&lt;br/&gt;RBAC proxy + Dagster webserver&lt;br/&gt;Dagster daemon"]
+        postgres["PostgreSQL service&lt;br/&gt;Dagster metadata"]
+      end
+
+      subgraph location_pool["Code-location compute pool"]
+        locations["Code-location services&lt;br/&gt;PEX host + user definitions"]
+      end
+
+      subgraph run_pool["Run compute pool"]
+        workers["Ephemeral run-worker&lt;br/&gt;job services"]
+      end
+
+      pex[("PEX stage&lt;br/&gt;source.pex + deps.pex")]
+      logs[("Compute-log stage")]
+    end
+
+    resources["Consumer resources&lt;br/&gt;warehouses, databases,&lt;br/&gt;integrations, and secrets"]
+  end
+
+  provider --&gt;|"Installs app and supplies images"| app
+  users --&gt;|"HTTPS service endpoint"| control
+  cli --&gt;|"Uploads artifacts"| pex
+  cli --&gt;|"Deploys code locations"| control
+  control &lt;--&gt;|"Dagster metadata"| postgres
+  control &lt;--&gt;|"gRPC"| locations
+  pex --&gt;|"Loads definitions"| locations
+  control --&gt;|"Launches each run"| workers
+  locations --&gt;|"Execution plan"| workers
+  workers --&gt;|"Run logs"| logs
+  workers --&gt;|"Granted access"| resources</code></pre>
+<p>The Native App and its services run inside the consumer account. Provider-owned images supply the runtime, while user code is deployed as PEX artifacts and runs with only the Snowflake resources granted by the consumer.</p>
 <p>These docs are for:</p>
 <ul>
 <li><strong>Admins</strong> who install Dagflow, grant roles, add code locations, and operate the app.</li>
@@ -594,6 +657,10 @@
     
     
       <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@11/dist/mermaid.min.js"></script>
+      
+        <script src="javascripts/mermaid.js"></script>
       
     
   </body>
